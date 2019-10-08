@@ -126,12 +126,31 @@ If your data can be represented as an image, text, or data, you can write a snap
 
 ## Installation
 
+### Xcode 11
+
+> ⚠️ Warning: By default, Xcode will try to add the SnapshotTesting package to your project's targets. Please _uncheck_ SnapshotTesting in the final step of adding a Swift package to your target, as documented below.
+
+ 1. From the **File** menu, navigate through **Swift Packages** and select **Add Package Dependency…**.
+ 2. Enter package respository URL: `https://github.com/pointfreeco/swift-snapshot-testing.git`
+ 3. Confirm the version and let Xcode resolve the package
+ 4. On the final dialog, _uncheck_ any box that adds the SnapshotTesting package to any target
+
+### Swift Package Manager
+
+If you want to use SnapshotTesting in any other project that uses [SwiftPM](https://swift.org/package-manager/), add the package as a dependency in `Package.swift`:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.6.0"),
+]
+```
+
 ### Carthage
 
 If you use [Carthage](https://github.com/Carthage/Carthage), you can add the following dependency to your `Cartfile`:
 
 ``` ruby
-github "pointfreeco/swift-snapshot-testing" ~> 1.5
+github "pointfreeco/swift-snapshot-testing" ~> 1.6
 ```
 
 > ⚠️ Warning: Carthage instructs you to drag frameworks into your Xcode project. Xcode may automatically attempt to link these frameworks to your app target. `SnapshotTesting.framework` is only compatible with test targets, so when you first add it to your project:
@@ -149,18 +168,8 @@ If your project uses [CocoaPods](https://cocoapods.org), add the pod to any appl
 
 ```ruby
 target 'MyAppTests' do
-  pod 'SnapshotTesting', '~> 1.5'
+  pod 'SnapshotTesting', '~> 1.6'
 end
-```
-
-### Swift Package Manager
-
-If you want to use SnapshotTesting in a project that uses [SwiftPM](https://swift.org/package-manager/), add the package as a dependency in `Package.swift`:
-
-```swift
-dependencies: [
-  .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.5.0"),
-]
 ```
 
 ## Features
