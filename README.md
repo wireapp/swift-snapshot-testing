@@ -37,14 +37,14 @@ When an assertion first runs, a snapshot is automatically recorded to disk and t
 
 Repeat test runs will load this reference and compare it with the runtime value. If they don't match, the test will fail and describe the difference. Failures can be inspected from Xcode's Report Navigator or by inspecting the file URLs of the failure.
 
-You can record a new reference by setting the `record` mode to `true` on the assertion or globally.
+You can record a new reference by setting the `record` parameter to `true` on the assertion or setting `isRecording` globally.
 
 ``` swift
 assertSnapshot(matching: vc, as: .image, record: true)
 
 // or globally
 
-record = true
+isRecording = true
 assertSnapshot(matching: vc, as: .image)
 ```
 
@@ -143,7 +143,10 @@ If you want to use SnapshotTesting in any other project that uses [SwiftPM](http
 
 ```swift
 dependencies: [
-  .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.8.1"),
+  .package(
+    url: "https://github.com/pointfreeco/swift-snapshot-testing.git",
+    from: "1.9.0"
+  ),
 ]
 ```
 
@@ -151,8 +154,14 @@ Next, add `SnapshotTesting` as a dependency of your test target:
 
 ```swift
 targets: [
-  .target(name: "MyApp", dependencies: [], path: "Sources"),
-  .testTarget(name: "MyAppTests", dependencies: ["MyApp", "SnapshotTesting"])
+  .target(name: "MyApp"),
+  .testTarget(
+    name: "MyAppTests",
+    dependencies: [
+      "MyApp",
+      .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+    ]
+  )
 ]
 ```
 
@@ -161,7 +170,7 @@ targets: [
 If you use [Carthage](https://github.com/Carthage/Carthage), you can add the following dependency to your `Cartfile`:
 
 ``` ruby
-github "pointfreeco/swift-snapshot-testing" ~> 1.8.0
+github "pointfreeco/swift-snapshot-testing" ~> 1.9.0
 ```
 
 > ⚠️ Warning: Carthage instructs you to drag frameworks into your Xcode project. Xcode may automatically attempt to link these frameworks to your app target. `SnapshotTesting.framework` is only compatible with test targets, so when you first add it to your project:
@@ -179,7 +188,7 @@ If your project uses [CocoaPods](https://cocoapods.org), add the pod to any appl
 
 ```ruby
 target 'MyAppTests' do
-  pod 'SnapshotTesting', '~> 1.8.1'
+  pod 'SnapshotTesting', '~> 1.9.0'
 end
 ```
 
@@ -188,14 +197,17 @@ end
   - [**Dozens of snapshot strategies**](Documentation/Available-Snapshot-Strategies.md). Snapshot testing isn't just for `UIView`s and `CALayer`s. Write snapshots against _any_ value.
   - [**Write your own snapshot strategies**](Documentation/Defining-Custom-Snapshot-Strategies.md). If you can convert it to an image, string, data, or your own diffable format, you can snapshot test it! Build your own snapshot strategies from scratch or transform existing ones.
   - **No configuration required.** Don't fuss with scheme settings and environment variables. Snapshots are automatically saved alongside your tests.
-  - **More hands-off.** New snapshots are recorded whether `record` mode is `true` or not.
+  - **More hands-off.** New snapshots are recorded whether `isRecording` mode is `true` or not.
   - **Subclass-free.** Assert from any XCTest case or Quick spec.
   - **Device-agnostic snapshots.** Render views and view controllers for specific devices and trait collections from a single simulator.
   - **First-class Xcode support.** Image differences are captured as XCTest attachments. Text differences are rendered in inline error messages.
   - **Supports any platform that supports Swift.** Write snapshot tests for iOS, Linux, macOS, and tvOS.
   - **SceneKit, SpriteKit, and WebKit support.** Most snapshot testing libraries don't support these view subclasses.
   - **`Codable` support**. Snapshot encodable data structures into their [JSON](Documentation/Available-Snapshot-Strategies.md#json) and [property list](Documentation/Available-Snapshot-Strategies.md#plist) representations.
-  - **Custom diff tool integration**.
+  - **Custom diff tool integration**. Configure failure messages to print diff commands for [Kaleidoscope](https://kaleidoscope.app) (or your diff tool of choice).
+    ``` swift
+    SnapshotTesting.diffTool = "ksdiff"
+    ```
 
 ## Plug-ins
 
@@ -205,7 +217,11 @@ end
   
   - [GRDBSnapshotTesting](https://github.com/SebastianOsinski/GRDBSnapshotTesting) adds snapshot strategy for testing SQLite database migrations made with [GRDB](https://github.com/groue/GRDB.swift).
   
-  - [AccessibilitySnapshot+SnapshotTesting](https://github.com/Sherlouk/AccessibilitySnapshot-SnapshotTesting) adds [AccessibilitySnapshot](https://github.com/cashapp/AccessibilitySnapshot) support for SnapshotTesting.
+  - [AccessibilitySnapshot](https://github.com/cashapp/AccessibilitySnapshot) adds easy regression testing for iOS accessibility.
+
+  - [AccessibilitySnapshotColorBlindness](https://github.com/Sherlouk/AccessibilitySnapshotColorBlindness) adds snapshot strategies for color blindness simulation on iOS views, view controllers and images.
+
+  - [swift-snapshot-testing-stitch](https://github.com/Sherlouk/swift-snapshot-testing-stitch/) adds the ability to stitch multiple UIView's or UIViewController's together in a single test.
 
 Have you written your own SnapshotTesting plug-in? [Add it here](https://github.com/pointfreeco/swift-snapshot-testing/edit/master/README.md) and submit a pull request!
   
