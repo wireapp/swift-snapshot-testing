@@ -69,7 +69,7 @@ public func _verifyInlineSnapshot<Value>(
   )
   -> String? {
 
-    let recording = recording || record
+    let recording = recording || isRecording
 
     do {
       let tookSnapshot = XCTestExpectation(description: "Took snapshot")
@@ -147,7 +147,7 @@ public func _verifyInlineSnapshot<Value>(
 
       /// Did not successfully record, so we will fail.
       if !attachments.isEmpty {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Windows)
         if ProcessInfo.processInfo.environment.keys.contains("__XCODE_BUILT_PRODUCTS_DIR_PATHS") {
           XCTContext.runActivity(named: "Attached Failure Diff") { activity in
             attachments.forEach {

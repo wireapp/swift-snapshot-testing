@@ -6,7 +6,15 @@ import XCTest
 public var diffTool: String? = nil
 
 /// Whether or not to record all new references.
-public var record = false
+public var isRecording = false
+
+/// Whether or not to record all new references.
+/// Due to a name clash in Xcode 12, this has been renamed to `isRecording`.
+@available(*, deprecated, renamed: "isRecording")
+public var record: Bool {
+  get { isRecording }
+  set { isRecording = newValue }
+}
 
 /// Asserts that a given value matches a reference on disk.
 ///
@@ -165,7 +173,7 @@ public func verifySnapshot<Value, Format>(
   )
   -> String? {
 
-    let recording = recording || record
+    let recording = recording || isRecording
 
     do {
       let fileUrl = URL(fileURLWithPath: "\(file)", isDirectory: false)
@@ -267,7 +275,7 @@ public func verifySnapshot<Value, Format>(
       try snapshotting.diffing.toData(diffable).write(to: failedSnapshotFileUrl)
 
       if !attachments.isEmpty {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Windows)
         if ProcessInfo.processInfo.environment.keys.contains("__XCODE_BUILT_PRODUCTS_DIR_PATHS") {
           XCTContext.runActivity(named: "Attached Failure Diff") { activity in
             attachments.forEach {
@@ -280,9 +288,26 @@ public func verifySnapshot<Value, Format>(
 
       let diffMessage = diffTool
         .map { "\($0) \"\(snapshotFileUrl.path)\" \"\(failedSnapshotFileUrl.path)\"" }
-        ?? "@\(minus)\n\"\(snapshotFileUrl.path)\"\n@\(plus)\n\"\(failedSnapshotFileUrl.path)\""
+        ?? """
+        @\(minus)
+        "\(snapshotFileUrl.path)"
+        @\(plus)
+        "\(failedSnapshotFileUrl.path)"
+
+        To configure output for a custom diff tool, like Kaleidoscope:
+
+            SnapshotTesting.diffTool = "ksdiff"
+        """
+
+      let failureMessage: String
+      if let name = name {
+        failureMessage = "Snapshot \"\(name)\" does not match reference."
+      } else {
+        failureMessage = "Snapshot does not match reference."
+      }
+
       return """
-      Snapshot does not match reference.
+      \(failureMessage)
 
       \(diffMessage)
 

@@ -1,6 +1,6 @@
 # Available Snapshot Strategies
 
-SnapshotTesting comes with a wide variety of snapshot strategies for a varienty of platforms. To extend these strategies or define your own, see [Defining Custom Snapshot Strategies](Defining-Custom-Snapshot-Strategies.md).
+SnapshotTesting comes with a wide variety of snapshot strategies for a variety of platforms. To extend these strategies or define your own, see [Defining Custom Snapshot Strategies](Defining-Custom-Snapshot-Strategies.md).
 
 If you'd like to submit your own custom strategy, see [Contributing](../CONTRIBUTING.md).
 
@@ -15,6 +15,8 @@ If you'd like to submit your own custom strategy, see [Contributing](../CONTRIBU
   - [`CGPath`](#cgpath)
       - [`.image`](#image-1)
       - [`.elementsDescription`](#elementsdescription)
+  - [`Data`](#data)
+      - [`.data`](#data=1)
   - [`Encodable`](#encodable)
       - [`.json`](#json)
       - [`.plist`](#plist)
@@ -218,6 +220,20 @@ assertSnapshot(matching: path, as: .elementsDescription)
 
 // Match reference as formatted by formatter.
 assertSnapshot(matching: path, as: .elementsDescription(numberFormatter: NumberFormatter()))
+```
+
+## Data
+
+**Platforms:** All
+
+### `.data`
+
+A snapshot strategy for comparing bare binary data.
+
+#### Example:
+
+``` swift
+assertSnapshot(matching: data, as: .data)
 ```
 
 ## Encodable
